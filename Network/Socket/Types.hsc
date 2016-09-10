@@ -1071,7 +1071,7 @@ poke32 p i0 a = do
 -- | Private newtype proxy for the Storable instance. To avoid orphan instances.
 newtype In6Addr = In6Addr HostAddress6
 
-#if __GLASGOW_HASKELL__ < 800
+#if __GLASGOW_HASKELL__ < 800 && !defined(__ANDROID__)
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 #endif
 
