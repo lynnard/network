@@ -27,7 +27,7 @@ module Network.BSD
     , getHostByAddr
     , hostAddress
 
-#if defined(HAVE_GETHOSTENT) && !defined(mingw32_HOST_OS)
+#if defined(HAVE_GETHOSTENT) && !defined(cygwin32_HOST_OS) && !defined(__ANDROID__)
     , getHostEntries
 
     -- ** Low level functionality
@@ -43,7 +43,7 @@ module Network.BSD
     , getServiceByPort
     , getServicePortNumber
 
-#if !defined(mingw32_HOST_OS)
+#if !defined(mingw32_HOST_OS) && !defined(__ANDROID__)
     , getServiceEntries
 
     -- ** Low level functionality
@@ -61,7 +61,7 @@ module Network.BSD
     , getProtocolNumber
     , defaultProtocol
 
-#if !defined(mingw32_HOST_OS)
+#if !defined(mingw32_HOST_OS) && !defined(__ANDROID__)
     , getProtocolEntries
     -- ** Low level functionality
     , setProtocolEntry
@@ -77,7 +77,7 @@ module Network.BSD
     , NetworkAddr
     , NetworkEntry(..)
 
-#if !defined(mingw32_HOST_OS)
+#if !defined(mingw32_HOST_OS) && !defined(__ANDROID__)
     , getNetworkByName
     , getNetworkByAddr
     , getNetworkEntries
@@ -298,7 +298,7 @@ getProtocolNumber proto = do
  (ProtocolEntry _ _ num) <- getProtocolByName proto
  return num
 
-#if !defined(mingw32_HOST_OS)
+#if !defined(mingw32_HOST_OS) && !defined(__ANDROID__)
 getProtocolEntry :: IO ProtocolEntry    -- Next Protocol Entry from DB
 getProtocolEntry = withLock $ do
  ent <- throwNoSuchThingIfNull "getProtocolEntry" "no such protocol entry"
@@ -397,7 +397,7 @@ getHostByAddr family addr = do
 foreign import CALLCONV safe "gethostbyaddr"
    c_gethostbyaddr :: Ptr HostAddress -> CInt -> CInt -> IO (Ptr HostEntry)
 
-#if defined(HAVE_GETHOSTENT) && !defined(mingw32_HOST_OS)
+#if defined(HAVE_GETHOSTENT) && !defined(mingw32_HOST_OS) && !defined(__ANDROID__)
 getHostEntry :: IO HostEntry
 getHostEntry = withLock $ do
  throwNoSuchThingIfNull         "getHostEntry" "unable to retrieve host entry"
@@ -463,7 +463,7 @@ instance Storable NetworkEntry where
    poke _p = error "Storable.poke(BSD.NetEntry) not implemented"
 
 
-#if !defined(mingw32_HOST_OS)
+#if !defined(mingw32_HOST_OS) && !defined(__ANDROID__)
 getNetworkByName :: NetworkName -> IO NetworkEntry
 getNetworkByName name = withLock $ do
  withCString name $ \ name_cstr -> do
